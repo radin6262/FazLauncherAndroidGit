@@ -2,7 +2,6 @@ name: Build Android APK (Manual)
 
 on:
   workflow_dispatch:
-    # Optional: add inputs for customizing the build
     inputs:
       build_type:
         description: 'Build type (release/debug)'
@@ -12,10 +11,17 @@ on:
         options:
           - release
           - debug
+      release_as_draft:
+        description: 'Release as draft'
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Required for creating GitHub Releases
 
     steps:
       # 1. Check out your repository
@@ -38,18 +44,13 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: '3.44.8'
 
       # 5. Install Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      # 6. Install Flet with all extras (including build dependencies) / custom extension download has been moved to requirements.txt
-      - name: Install Flet
-        run: |
-          pip install --upgrade pip
-          pip install -r requirements.txt
 
       # 6. Install Python dependencies
       - name: Install dependencies
@@ -80,3 +81,13 @@ jobs:
         run: |
           echo "Generated APK files:"
           find build -name "*.apk" -type f
+
+      # 10. Create GitHub Draft Release
+      - name: Create Draft Release
+        if: ${{ inputs.release_as_draft }}
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          tag_name: "v1.0.${{ github.run_number }}"
+          name: "Release v1.0.${{ github.run_number }}"
+          files: build/apk/*.apk
