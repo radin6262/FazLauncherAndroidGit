@@ -1,0 +1,30 @@
+[tool.flet]
+name = "faz launcher"
+product = "Faz Launcher"
+description = "A cross-platform launcher for Five Nights at Freddy's"
+assets = [
+    "assets"
+]
+
+
+[project]
+name = "fazlauncher"
+version = "1.1.0"
+description = "A cross-platform launcher for Five Nights at Freddy's"
+
+dependencies = [
+    "flet>=0.86.5",
+    "requests"
+]
+
+[tool.flet.android]
+package = "com.flet.fazlauncher"
+dependencies = [
+  "flet-apk-installer @ git+https://github.com/radin6262/flet-apk-installer.git",
+  "pyjnius"
+]
+
+[tool.flet.android.permission]
+"android.permission.INTERNET" = true
+"android.permission.REQUEST_INSTALL_PACKAGES" = true
+"android.permission.QUERY_ALL_PACKAGES" = true
