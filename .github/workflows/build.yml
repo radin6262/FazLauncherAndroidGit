@@ -62,18 +62,18 @@ jobs:
       - name: Build Android APK
         run: |
           if [ "${{ inputs.build_type }}" == "release" ]; then
-            flet build apk --release
+            flet build apk --release --split-per-abi
           else
-            flet build apk
+            flet build apk --split-per-abi 
           fi
 
-      # 8. Locate and upload the generated APK
-      - name: Upload APK as artifact
+      # 8. Locate and upload the generated ARM64 APK
+      - name: Upload ARM64 APK as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: fnaf-launcher-${{ inputs.build_type }}
-          path: build/apk/*.apk
-          if-no-files-found: error   # fail if no APK found
+          name: faz-launcher-arm64-${{ inputs.build_type }}
+          path: build/apk/*arm64-v8a*.apk
+          if-no-files-found: error
 
       # 9. Optional: List files for debugging
       - name: List generated files
@@ -90,4 +90,4 @@ jobs:
           draft: true
           tag_name: "v1.0.${{ github.run_number }}"
           name: "Release v1.0.${{ github.run_number }}"
-          files: build/apk/*.apk
+          files: build/apk/*arm64-v8a*.apk
